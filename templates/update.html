@@ -1,0 +1,42 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{ super() }}
+	<style>
+		body { background: #f9e8ef; }
+	</style>
+{% endblock %}
+
+
+{% block title %}
+Manage subscriptions
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <div class="row">
+            <h1>Manage Subscriptions</h1>
+        </div>
+        <div class="row" style='background-color: white;'>
+            <div class="col" style="padding: 15px">
+                {% if action == 'Unsubscribe' %}
+                    <p>{{ email }} has been unsubscribed from all newsletters.</p>
+                {% elif action == 'Subscribe' %}
+                    <p>{{ email }} is subscribed to the following newsletters:</p>
+                    <ul>
+                    {% for subscription, name in customer_update_text.items() %}
+                        <li>{{ name }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <a href='/{{user}}/subscriptions/manage'>Back</a>
+            </div>
+        </div>
+    </div>
+    <div class=col-4></div>
+</div>
+{% endblock %}

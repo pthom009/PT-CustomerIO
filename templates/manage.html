@@ -1,0 +1,128 @@
+{% extends 'bootstrap/base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block styles %}
+{{ super() }}
+	<style>
+		body { background: #f9e8ef; }
+	</style>
+{% endblock %}
+
+
+{% block title %}
+Manage Subscriptions
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <div class="row">
+            <h1>Manage Subscriptions</h1>
+        </div>
+        <div class="row" style='background-color: white;'>
+            <div class="col" style="padding: 15px">
+                <form action='update' method = "POST">
+                    <div class='form-group'>
+                        <label for="email"><h4>Email Address:</h4></label>
+                        <input type="email" class="form-control" name="email" value="{{email}}" readonly>
+                    </div>
+                    <h6>Subscription Choices:</h6>
+                    <div class='form-group'>
+                        {% for key,value in customer_subscriptions.items() %}
+                            <div class="form-check">
+                                {% if value['Value'] %}
+                                    <input class="form-check-input" type="checkbox" name={{key}} checked onclick=checkboxControlSubmitButton()>
+                                {% endif %}
+                                {% if not value['Value'] %}
+                                    <input class="form-check-input" type="checkbox" name={{key}} onclick=checkboxControlSubmitButton()>
+                                {% endif %}
+                                <label class="form-check-label" for={{key}}>
+                                    {{value['Name']}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class='row' style="padding-bottom: 5px">
+                        <div class='col'>
+                            <input class="btn btn-primary" onclick="eventCheckBox()" value="Select/Unselect All">
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col'>
+                            {% if unsubscribed %}
+                                <input class="btn btn-primary" id="submitButton" type="submit" value="Subscribe" name=action disabled>
+                                <input class="btn btn-danger" type="submit" value="Unsubscribe" name='action' onclick=clearForm() disabled>
+                            {% else %}
+                                <input class="btn btn-primary" id="submitButton" type="submit" value="Subscribe" name=action>
+                                <input class="btn btn-danger" type="submit" value="Unsubscribe" name='action' onclick=clearForm()>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class=col-4></div>
+</div>
+<script>
+    function eventCheckBox() {
+        checkOne = false
+        notCheckOne = false
+        let checkboxes = document.getElementsByClassName("form-check-input");
+        for(let i = 0; i < checkboxes.length ; i++) {
+            if (checkboxes[i].checked == true){
+                checkOne = true
+                }
+            if (checkboxes[i].checked == false){
+                notCheckOne = true
+            }
+        }
+        if (checkOne && !(notCheckOne)){
+            for(let i = 0; i < checkboxes.length ; i++) {
+                checkboxes[i].checked = false
+                document.getElementById("submitButton").disabled = true;
+                }
+        } else {
+            for(let i = 0; i < checkboxes.length ; i++) {
+                checkboxes[i].checked = true
+                document.getElementById("submitButton").disabled = false;
+                }
+            } 
+        }
+</script>
+<script>
+    function validateForm() {
+        let checkboxes = document.getElementsByClassName("form-check-input");
+        for(let i = 0; i < checkboxes.length ; i++) {
+            if (checkboxes[i].checked == true){
+                return true
+                }
+        alert("No option was selected")
+        return false
+            }
+        }
+    function checkboxControlSubmitButton(){
+        enable = false
+        let checkboxes = document.getElementsByClassName("form-check-input");
+        for(let i = 0; i < checkboxes.length ; i++) {
+            if (checkboxes[i].checked == true){
+                enable = true
+                }
+            }
+        if (enable){
+            document.getElementById("submitButton").disabled = false
+        } else {
+            document.getElementById("submitButton").disabled = true;
+            }
+        }
+    function clearForm(){
+        enable = false
+        let checkboxes = document.getElementsByClassName("form-check-input");
+        for(let i = 0; i < checkboxes.length ; i++) {
+            checkboxes[i].checked = false
+            }
+        }
+</script>
+{% endblock %}
