@@ -28,7 +28,7 @@ def get_customer(id):
         return False
 
 
-def update_customer_subscriptions(id, subscriptions):
+def update_customer(id, subscriptions):
     cio = CustomerIO(SITE_ID,API_KEY, region=Regions.US)
 
     #Template update dict
@@ -36,21 +36,11 @@ def update_customer_subscriptions(id, subscriptions):
     customer_update['id'] = id
 
     #set customer to not unsubscribed if currently unsubscribed
-    customer_update['unsubscribed'] = 'false'
+    #customer_update['unsubscribed'] = 'false'
 
     #set customer update values
     for subscription, value in subscriptions.items():
         customer_update[subscription] = value
-
-    return cio.identify(**customer_update)
-
-def unsubscribe_user(id):
-    cio = CustomerIO(SITE_ID,API_KEY, region=Regions.US)
-
-    #Template customer unsubscribe update
-    customer_update = {}
-    customer_update['id'] = id
-    customer_update['unsubscribed'] ='true'
 
     return cio.identify(**customer_update)
 
@@ -74,7 +64,3 @@ def create_subscription_center_choices(attributes, unsubscribed):
                 subscription_center_choices[subscription] = {'Name': subscription_choices[subscription], 'Value': False}
     return subscription_center_choices
 
-#print(update_customer_subscriptions('phillipthomas@knights.ucf.edu',{'newsletter_1': 'checked'}))
-#print(get_customer_attributes('5760bd83-ff0d-4b53-bc29-d877be9c0ddc'))
-#print(create_subscription_center_choices(get_customer('44265d59-9001-4736-be99-2ee2cdf1d0b6')['attributes'], get_customer('44265d59-9001-4736-be99-2ee2cdf1d0b6')['unsubscribed']))
-#print(unsubscribe_user('phillipthomas@knights.ucf.edu'))

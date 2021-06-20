@@ -1,6 +1,6 @@
-from flask import Flask, render_template, redirect, url_for, request, abort
+from flask import Flask, render_template, request, abort
 from flask_bootstrap import Bootstrap
-from CustomerIOHelper import get_customer, create_subscription_center_choices, unsubscribe_user, update_customer_subscriptions
+from CustomerIOHelper import get_customer, create_subscription_center_choices, update_customer
 from SubscriptionChoices import subscription_choices
 app = Flask(__name__)
 
@@ -37,18 +37,31 @@ def update(user):
         action = request.form['action']
         email = request.form['email']
 
+        customer = get_customer(user)
+        customer_attributes = customer['attributes']
+
         if action == 'Subscribe':
             for subscription, value in form_data.items():
+                #Sets subscribed newsletter attribute to true
                 if value == 'on':
                     customer_update[subscription] = 'True'
                     customer_update_text[subscription] = subscription_choices[subscription]
             for subscription in subscription_choices.keys():
-                if subscription not in customer_update.keys():
+                #Sets currently subscribed newsletter attributes to false
+                if subscription not in customer_update.keys() and subscription in customer_attributes.keys():
                     customer_update[subscription] = 'False'
-            update_customer_subscriptions(user, customer_update)
+            if customer['unsubscribed']:
+                customer_update['unsubscribed'] ='false'
+            update_customer(user, customer_update)
             return render_template('update.html', user=user, customer_update_text=customer_update_text, action=action, email=email)
         elif action == 'Unsubscribe':
-            unsubscribe_user(user)
+            for subscription in subscription_choices.keys():
+                #Sets currently subscribed newsletter attributes to false
+                if subscription not in customer_update.keys() and subscription in customer_attributes.keys():
+                    customer_update[subscription] = 'False'
+            customer_update['unsubscribed'] ='true'
+            update_customer(user, customer_update)
+            #unsubscribe_user(user)
             return render_template('update.html', user=user, action=action, email=email)
 if __name__ == '__main__':
     app.run(debug=True)
